@@ -38,7 +38,7 @@ def check_sensor(update, context):
     else:
         print('Failed to get reading. Try again!')
 
-def check_smoothed_data(update, context):
+def get_smoothed_data(update, context):
     try:
         # create empty lists
         humidity_data_set = list()
@@ -162,6 +162,7 @@ def main():
     updater = Updater("1134724631:AAH4XVhX1NtURXFaVHzeZ95FQUPsyq9xPTM", use_context=True)
     dp = updater.dispatcher
     dp.add_handler(CommandHandler("temp", check_sensor))
+    dp.add_handler(CommandHandler("smthd", get_smoothed_data))
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("info", info))
     dp.add_handler(CommandHandler("info_bogdan", info_bog))
