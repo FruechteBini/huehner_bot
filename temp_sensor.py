@@ -8,6 +8,7 @@ import threading
 import datetime
 import telegram
 import subprocess
+import statistics
 
 from telegram.ext import Updater, CommandHandler
 
@@ -27,6 +28,35 @@ def check_sensor(update, context):
     try:
         humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
         print("temp read.")
+    except:
+        update.message.reply_text("Da stimmt was beim Sensor nicht. Aber der IT-Daddy ist sicher schon dran...")
+        print("exception")
+    if humidity is not None and temperature is not None:
+        print('Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(temperature, humidity))
+        update.message.reply_text("Hühnertemperatur: {} *C\nFeuchtigkeit: {}%".format(temperature, humidity))
+        return temperature, humidity
+    else:
+        print('Failed to get reading. Try again!')
+
+def check_smoothed_data(update, context):
+    try:
+        # create empty lists
+        humidity_data_set = list()
+        temperature_data_set = list()
+
+        # get 10 sets of data
+        for i_measurement in range(10):
+            humidity_tmp, temperature_tmp = Adafruit_DHT.read_retry(sensor, pin)
+
+            # append fresh data to lists
+            humidity_data_set.append(humidity_tmp)
+            temperature_data_set.append(temperature_tmp)
+
+        # calculate median
+        humidity = statistics.median(humidity_data_set)
+        temperature = statistics.median(temperature_data_set)
+        print("temp read.")
+
     except:
         update.message.reply_text("Da stimmt was beim Sensor nicht. Aber der IT-Daddy ist sicher schon dran...")
         print("exception")
