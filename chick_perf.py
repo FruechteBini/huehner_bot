@@ -3,16 +3,24 @@ from telegram.ext import Updater, CommandHandler
 
 class Chicken:
     performance_template = \
-        "{id}'s Performance sind insgesamt {output} Eier mit einer aktuellen Streak von {streak} Eiern hintereinander."
+        """{id}s Performance:
+        Gesamt: {output} 
+        Höchste Streak: {record}
+        Aktuelle Streak: {streak}
+        """
 
-    def __init__(self, name, initial_streak=0, initial_output=0):
+    def __init__(self, name, initial_streak=0, initial_output=0, initial_record=0):
         self.name = name
         self.streak = initial_streak
         self.output = initial_output
+        self.record = initial_record
+
 
     def performance_day(self):
-        self.streak += 1
         self.output += 1
+        self.streak += 1
+        if self.streak > self.record:
+            self.record = self.streak
 
     def lay_day(self):
         self.streak = 0
@@ -20,12 +28,13 @@ class Chicken:
     def show_performance(self):
         return self.performance_template.format(id=self.name,
                                                 output=self.output,
+                                                record=self.record,
                                                 streak=self.streak)
 
 
-bogdan = Chicken('Bogdan', 10, 15)
-flash = Chicken('Flash', 15, 20)
-tanja = Chicken('Tanja', 20, 25)
+bogdan = Chicken('Bogdan', 10, 15, 5)
+flash = Chicken('Flash', 15, 20, 10)
+tanja = Chicken('Tanja', 20, 25, 15)
 
 def start(update, context):
     start_text = """
